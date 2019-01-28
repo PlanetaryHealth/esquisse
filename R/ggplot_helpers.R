@@ -7,6 +7,7 @@
 #' @param color Variable to map in color
 #' @param size Variable to map in size
 #' @param facet Variable to call in facet_wrap
+#' @param linetype Variable to call in linetype
 #' @param type Geom to use
 #' @param params additionnal params, like title, xlabel...
 #' @param ... not use
@@ -29,9 +30,9 @@
 #' ggtry(data = diamonds, x = "cut")
 #' 
 #' }
-ggtry <- function(data, x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, group = NULL, facet = NULL, type = "auto", params = list(), ...) {
+ggtry <- function(data, x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, group = NULL, facet = NULL, linetype = NULL, type = "auto", params = list(), ...) {
 
-  check_vars <- c(x, y, fill, color, size, facet)
+  check_vars <- c(x, y, fill, color, size, facet, linetype)
   if ((is.null(check_vars) || !all(check_vars %in% names(data))) & !inherits(data, what = "sf")) {
     return(ggplot())
   }
@@ -61,6 +62,11 @@ ggtry <- function(data, x = NULL, y = NULL, fill = NULL, color = NULL, size = NU
   } else {
     colortype <- NULL
   }
+  if (!is.null(linetype)) {
+    linetype <- col_type(data[[linetype]])
+  } else {
+    linetype <- NULL
+  }
 
   # geom
   chartgeom <- guess_geom(
@@ -77,6 +83,7 @@ ggtry <- function(data, x = NULL, y = NULL, fill = NULL, color = NULL, size = NU
     fill = fill, 
     color = color, 
     size = size, 
+    linetype = linetype,
     group = group, 
     geom = chartgeom, 
     xtype = xtype, 
@@ -111,6 +118,10 @@ ggtry <- function(data, x = NULL, y = NULL, fill = NULL, color = NULL, size = NU
   
   if (chartgeom %in% c("line", "point") & is.null(size)) {
     paramsgeom$size <- params$size %||% 1.6
+  }
+  
+  if (chartgeom %in% c("line", "point") & is.null(linetype)) {
+    paramsgeom$linetype <- params$linetype %||% "solid"
   }
 
   if (chartgeom %in% c("bar")) {
@@ -250,6 +261,7 @@ do.call.tommy <- function(what, args, ...) {
 #' @param fill Variable to map in fill
 #' @param color Variable to map in color
 #' @param size Variable to map in size
+#' @param linetype Variable to map in linetype
 #' @param geom The geom to use
 #' @param xtype Type of x variable
 #' @param ytype Type of y variable
@@ -266,9 +278,9 @@ do.call.tommy <- function(what, args, ...) {
 #' 
 #' guess_aes(x = "color", xtype = "discrete")
 #' 
-guess_aes <- function(x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, group = NULL, geom = "auto", xtype = NULL, ytype = NULL) {
+guess_aes <- function(x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, linetype = NULL, group = NULL, geom = "auto", xtype = NULL, ytype = NULL) {
 
-  vars <- list(x = x, y = y, fill = fill, color = color, size = size, group = group)
+  vars <- list(x = x, y = y, fill = fill, color = color, size = size, linetype = linetype, group = group)
   vars <- dropNulls(vars)
 
   # if (is.null(vars$fill)) {

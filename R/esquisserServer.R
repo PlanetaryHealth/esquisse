@@ -85,7 +85,7 @@ esquisserServer <- function(input, output, session, data = NULL, dataModule = c(
 
 
   # aesthetics from drag-and-drop
-  aes_r <- reactiveValues(x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, group = NULL, facet = NULL)
+  aes_r <- reactiveValues(x = NULL, y = NULL, fill = NULL, color = NULL, size = NULL, group = NULL, facet = NULL, linetype = NULL)
   observeEvent(input$dragvars$target$xvar, {
     aes_r$x <- input$dragvars$target$xvar
   }, ignoreNULL = FALSE)
@@ -106,6 +106,9 @@ esquisserServer <- function(input, output, session, data = NULL, dataModule = c(
   }, ignoreNULL = FALSE)
   observeEvent(input$dragvars$target$facet, {
     aes_r$facet <- input$dragvars$target$facet
+  }, ignoreNULL = FALSE)
+  observeEvent(input$dragvars$target$linetype,{
+    aes_r$linetype <- input$dragvars$target$linetype
   }, ignoreNULL = FALSE)
   
   
@@ -140,6 +143,7 @@ esquisserServer <- function(input, output, session, data = NULL, dataModule = c(
             size = aes_r$size,
             group = aes_r$group,
             facet = aes_r$facet,
+            linetype = aes_r$linetype,
             params = reactiveValuesToList(paramsChart)$inputs,
             type = geomSelected$x
           )
